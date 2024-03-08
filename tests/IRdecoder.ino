@@ -1,5 +1,5 @@
 #include <IRremote.h>
-#include <../../../../../../../Users/Arthur/Documents/Arduino/eecs2032/Project/IRdecoder/headers/IRdecoder.h>
+#include <../IRdecoder/headers/IRdecoder.h>
 
 IRdecoder::IRdecoder(uint8_t pin) : pin(pin), control_state{} {
     static IRrecv irrecv(pin);
