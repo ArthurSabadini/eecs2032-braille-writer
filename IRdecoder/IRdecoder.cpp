@@ -1,5 +1,4 @@
-#include <IRremote.h>
-#include "./headers/IRdecoder.h"
+#include "IRdecoder.h"
 
 IRdecoder::IRdecoder(uint8_t pin) : pin(pin), control_state{} {
     static IRrecv irrecv(pin);
@@ -7,6 +6,9 @@ IRdecoder::IRdecoder(uint8_t pin) : pin(pin), control_state{} {
     
     this->irrec = &irrecv;
     this->results = &result;
+}
+
+void IRdecoder::setup() {
     this->irrec->enableIRIn();
 }
 
@@ -16,13 +18,10 @@ String IRdecoder::getStringfiedState() {
     for(uint8_t i = 0; i < ROWS; i++) {
         state += "[";
         for(uint8_t j = 0; j < COLS; j++) {
-            if(j == COLS - 1) {
-                state += this->control_state[i][j];
-                break;
-            }
-            state += String(this->control_state[i][j]) + ", ";
+            state += String(this->control_state[i][j]);
+            if (j < COLS - 1) state += ", ";
         }
-        state += "]";
+        state += (i == ROWS - 1) ? "]" : "], ";
     } 
     state += "]";
 

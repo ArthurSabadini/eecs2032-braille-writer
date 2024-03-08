@@ -1,0 +1,3 @@
+/Users/Arthur/Documents/Arduino/eecs2032/Project/IRdecoder/CMakeFiles/IRdecoder.dir
+/Users/Arthur/Documents/Arduino/eecs2032/Project/IRdecoder/CMakeFiles/edit_cache.dir
+/Users/Arthur/Documents/Arduino/eecs2032/Project/IRdecoder/CMakeFiles/rebuild_cache.dir
