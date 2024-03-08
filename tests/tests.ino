@@ -1,18 +1,17 @@
-#include <IRremote.h>
-#include <../../../../../../../Users/Arthur/Documents/Arduino/eecs2032/Project/IRdecoder/headers/IRdecoder.h>
+#include <IRdecoder.h>
 
 #define IR_PIN 8
 
-IRdecoder decode(IR_PIN);
+IRdecoder decoder(IR_PIN);
 
 void setup() {
     Serial.begin(9600);
-    decode.setup();
+    decoder.setup();
 }
 
 void loop() {
-    uint32_t signal = decode.readSignal();
-    String state = decode.getStringfiedState(); 
+    uint32_t signal = decoder.readSignal();
+    String state = decoder.getStringfiedState(); 
 
     Serial.print(signal, HEX);
     Serial.print("\t");
