@@ -2,7 +2,6 @@
 #define IRDECODER_H
 
 #include <Arduino.h>
-//#include <../../../../../../../Users/Arthur/Library/Arduino15/packages/arduino/hardware/avr/1.8.6/cores/arduino/Arduino.h>
 #include <IRremote.h>
 
 #define ACTION_WINDON_MS 250
