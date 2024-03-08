@@ -1,5 +1,5 @@
 #include <IRremote.h>
-#include <../../../../../../../Users/Arthur/Documents/Arduino/eecs2032/Project/IRdecoder/headers/IRdecoder.h>
+#include <../IRdecoder/headers/IRdecoder.h>
 
 #define IR_PIN 8
 
