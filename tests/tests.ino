@@ -1,7 +1,8 @@
 #include <IRdecoder.h>
 
-#define IR_PIN 8
+#define IR_PIN 2
 
+Buffer<3, 2> buff(BUFFER_SIZE);
 IRdecoder decoder(IR_PIN);
 
 void setup() {
@@ -10,12 +11,17 @@ void setup() {
 }
 
 void loop() {
+    buff = decoder.receiveInput();
+    //String state = decoder.getStringfiedState(); 
+    //Serial.println(state);
+    //delay(500);
+    /*
     uint32_t signal = decoder.readSignal();
-    String state = decoder.getStringfiedState(); 
 
     Serial.print(signal, HEX);
     Serial.print("\t");
     Serial.println(state);
 
-    delay(1500);
+    delay(500);
+    */
 }

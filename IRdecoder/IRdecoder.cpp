@@ -1,24 +1,35 @@
 #include "IRdecoder.h"
 
-IRdecoder::IRdecoder(uint8_t pin) : pin(pin), control_state{} {
-    static IRrecv irrecv(pin);
-    static decode_results result; 
-    
-    this->irrec = &irrecv;
-    this->results = &result;
-}
-
 void IRdecoder::setup() {
-    this->irrec->enableIRIn();
+    irrec.enableIRIn();
+    wasInitialized = true;
+    isActive = true;
 }
 
+Buffer<3, 2> IRdecoder::receiveInput() {
+    if(!wasInitialized) return Buffer<3, 2>(0);
+    if(!isActive) { irrec.resume(); isActive = true; }
+
+    while(isActive) {
+        inputInterruptHandler();
+        delay(ACTION_WINDON_MS);
+    }
+    return input_buffer;
+}
+
+void IRdecoder::endReceiveInput() {
+    irrec.disableIRIn();
+    isActive = false;
+}
+
+// Mainly for debug purposes
 String IRdecoder::getStringfiedState() {
     String state = "[";
 
     for(uint8_t i = 0; i < ROWS; i++) {
         state += "[";
         for(uint8_t j = 0; j < COLS; j++) {
-            state += String(this->control_state[i][j]);
+            state += String(control_state[i][j]);
             if (j < COLS - 1) state += ", ";
         }
         state += (i == ROWS - 1) ? "]" : "], ";
@@ -28,12 +39,26 @@ String IRdecoder::getStringfiedState() {
     return state;
 }
 
+// Update the current symbol on input, after control_state update
+void IRdecoder::updateCurrentSymbol() {
+    // Updating the current braille symbol inputted
+    symbol[0][1] = control_state[ROWS-3][COLS-2];
+    symbol[0][1] = control_state[ROWS-3][COLS-1];
+
+    symbol[1][1] = control_state[ROWS-2][COLS-2];
+    symbol[1][1] = control_state[ROWS-2][COLS-1];
+
+    symbol[2][1] = control_state[ROWS-1][COLS-2];
+    symbol[2][1] = control_state[ROWS-1][COLS-1];
+}
+
 void IRdecoder::resetState() {
     for(uint8_t i = 0; i < ROWS; i++) {
         for(uint8_t j = 0; j < COLS; j++) {
-            this->control_state[i][j] = 0;
+            control_state[i][j] = 0;
         }
     } 
+    updateCurrentSymbol();
 }
 
 uint32_t IRdecoder::indexToButtonVal(uint8_t index1, uint8_t index2) {
@@ -94,13 +119,47 @@ uint8_t* IRdecoder::buttonValToIndex(uint32_t buttonVal) {
 }
 
 uint32_t IRdecoder::readSignal() {
-    if(!this->irrec->decode(this->results)) return 0xFFFFFF;
+    // Reading input signal (button pressed) one by one
+    int successful = irrec.decode(&results);
+    if(!successful) return UNDEFINED;
 
     // Decode signal and save
-    uint8_t* indexes = this->buttonValToIndex(this->results->value);
-    if(indexes) this->control_state[indexes[0]][indexes[1]] = 1; // Save activation
+    uint8_t* indexes = buttonValToIndex(results.value);
+    if(indexes) control_state[indexes[0]][indexes[1]] = 1; // Save activation
 
-    this->irrec->resume();
+    irrec.resume();
     delete[] indexes;
-    return this->results->value;
+    return results.value;
+}
+
+void IRdecoder::inputInterruptHandler() {
+    uint32_t buttonPressed = readSignal();
+
+    String state = getStringfiedState();
+
+    Serial.println(buttonPressed, HEX);
+    Serial.print("\t");
+    Serial.println(state);
+    if(buttonPressed == UNDEFINED) return;
+
+    switch(buttonPressed) {
+        case IRdecoder::NEXT_WORD:
+            // Add next word to symbols list
+            input_buffer.add(symbol);
+            resetState();
+            break; 
+        case IRdecoder::DELETE_WORD:
+            // Delete current word
+            if(!input_buffer.empty()) input_buffer.pop(); 
+            resetState();
+            break;
+        case IRdecoder::CONCLUDE:
+            // Complete input, save and exit
+            resetState();
+            endReceiveInput();
+            break;
+        default: 
+            updateCurrentSymbol();
+            break;
+    }
 }

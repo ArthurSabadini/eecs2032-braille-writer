@@ -1,13 +1,16 @@
 #ifndef IRDECODER_H
 #define IRDECODER_H
 
-#include <Arduino.h>
+#include <Buffer.h>
 #include <IRremote.h>
 
+// Remote Buttons Code
 #define ACTION_WINDON_MS 250
+#define BUFFER_SIZE 11 
 #define ROWS 7
 #define COLS 3
 #define POWER 0xFFA25D
+
 #define VOL_PLUS 0xFF629D
 #define FUNC_STOP 0xFFE21D
 #define REWIND 0xFF22DD
@@ -28,26 +31,44 @@
 #define SEVEN 0xFF42BD
 #define EIGHT 0xFF4AB5
 #define NINE 0xFF52AD
+#define UNDEFINED 0xFFFFFF
 
 class IRdecoder {
     public: 
-        uint8_t pin;
-        uint8_t control_state[ROWS][COLS];
+        using BufferType = uint8_t[3][2]; 
+        Buffer<3, 2> input_buffer;
 
-        IRdecoder(uint8_t pin);
+        // Buttons defined for I/O functionality
+        const static uint32_t NEXT_WORD = FAST_FORWARD;
+        const static uint32_t DELETE_WORD = REWIND;
+        const static uint32_t CONCLUDE = POWER;
+
+        IRdecoder(uint8_t pin) : pin(pin), control_state{}, symbol{}, input_buffer(BUFFER_SIZE), irrec(pin), results() {};
 
         //char* getButtonsPressed(); // To be implemented
         void setup();
-        uint32_t readSignal(); // Receive and Read signals
+        Buffer<3, 2> receiveInput();
         String getStringfiedState();
         void resetState();
 
     private:
-        IRrecv* irrec;
-        decode_results* results;
+        bool wasInitialized = false;
+        bool isActive = false;
 
+        uint8_t pin;
+        uint8_t control_state[ROWS][COLS];
+        BufferType symbol;
+
+        IRrecv irrec;
+        decode_results results;
+
+        void endReceiveInput();
+        uint32_t readSignal(); // Receive and Read signals
+
+        void updateCurrentSymbol();
         uint32_t indexToButtonVal(uint8_t index1, uint8_t index2);
         uint8_t* buttonValToIndex(uint32_t buttonVal); // Don't forget to free memory when not needed!
+        void inputInterruptHandler();
 };
 
 #endif
