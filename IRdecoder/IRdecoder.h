@@ -4,9 +4,113 @@
 #include <Arduino.h>
 #include <IRremote.h>
 
+// Custom input buffer definition
+#ifndef BUFFERIO_H
+#define BUFFERIO_H
+
+template<uint8_t Rows, uint8_t Cols>
+class BufferIO {
+private:
+    uint8_t (*buffer)[Rows][Cols];
+    uint8_t bufferSize;
+    uint8_t capacity;
+
+    void copy(const uint8_t src[Rows][Cols], uint8_t dst[Rows][Cols]);
+    void clear(uint8_t dst[Rows][Cols]);
+
+public:
+    BufferIO(uint8_t size) : capacity(size), bufferSize(0) {
+        this->buffer = new uint8_t[size][Rows][Cols]{};
+    }
+
+    ~BufferIO() { delete[] buffer; }
+
+    void add(const uint8_t element[Rows][Cols]);
+    uint8_t size() const { return bufferSize; }
+    bool empty() { return size() == 0; }
+    void get(uint8_t index, uint8_t element[Rows][Cols]) const;
+    void pop();
+    void remove(int8_t index);
+    
+    // Overriding assignment
+    BufferIO& operator=(const BufferIO& other);
+};
+
+template<uint8_t Rows, uint8_t Cols>
+void BufferIO<Rows, Cols>::copy(const uint8_t src[Rows][Cols], uint8_t dst[Rows][Cols]) {
+    for (uint8_t row = 0; row < Rows; row++)
+        for (uint8_t col = 0; col < Cols; col++)
+            dst[row][col] = src[row][col];
+}
+
+template<uint8_t Rows, uint8_t Cols>
+void BufferIO<Rows, Cols>::clear(uint8_t dst[Rows][Cols]) {
+    for (uint8_t row = 0; row < Rows; row++)
+        for (uint8_t col = 0; col < Cols; col++)
+            dst[row][col] = 0;
+}
+
+template<uint8_t Rows, uint8_t Cols>
+void BufferIO<Rows, Cols>::add(const uint8_t element[Rows][Cols]) {
+    if (bufferSize >= capacity) return;
+    copy(element, buffer[size()]);
+    bufferSize++;
+}
+
+template<uint8_t Rows, uint8_t Cols>
+void BufferIO<Rows, Cols>::get(uint8_t index, uint8_t element[Rows][Cols]) const {
+    if (index >= size()) return;  // Index out of bounds
+    copy(buffer[index], element);
+}
+
+template<uint8_t Rows, uint8_t Cols>
+void BufferIO<Rows, Cols>::pop() {
+    if (size() <= 0) return;
+    remove(size() - 1);
+}
+
+template<uint8_t Rows, uint8_t Cols>
+void BufferIO<Rows, Cols>::remove(int8_t index) {
+    if (index < 0 || index >= size()) return;
+    clear(buffer[index]);
+    bufferSize--;
+
+    if (index == size() - 1) return;
+    for (uint8_t idx = index; idx < size() - 1; idx++) {
+        copy(buffer[index + 1], buffer[index]);
+    }
+}
+
+template<uint8_t Rows, uint8_t Cols>
+BufferIO<Rows, Cols>& BufferIO<Rows, Cols>::operator=(const BufferIO& other) {
+    if (this != &other) {
+        // Resize if necessary
+        if (capacity != other.capacity) {
+            delete[] buffer;
+            capacity = other.capacity;
+            buffer = new uint8_t[capacity][Rows][Cols]{};
+        }
+
+        // Copy the data
+        for (uint8_t i = 0; i < other.size(); i++) {
+            copy(other.buffer[i], buffer[i]);
+        }
+
+        bufferSize = other.bufferSize;
+    }
+
+    return *this;
+}
+
+#endif
+
+// Config Definitions
 #define ACTION_WINDON_MS 250
+#define BUFFER_SIZE 11 
 #define ROWS 7
 #define COLS 3
+
+// Remote Buttons Code
 #define POWER 0xFFA25D
 #define VOL_PLUS 0xFF629D
 #define FUNC_STOP 0xFFE21D
@@ -28,26 +132,51 @@
 #define SEVEN 0xFF42BD
 #define EIGHT 0xFF4AB5
 #define NINE 0xFF52AD
+#define UNDEFINED 0xFFFFFF
 
 class IRdecoder {
     public: 
-        uint8_t pin;
-        uint8_t control_state[ROWS][COLS];
+        BufferIO<3, 2> input_buffer;
 
-        IRdecoder(uint8_t pin);
+        // Buttons defined for I/O functionality
+        const static uint32_t NEXT_WORD = FAST_FORWARD;
+        const static uint32_t DELETE_WORD = REWIND;
+        const static uint32_t CONCLUDE = POWER;
+
+        IRdecoder(uint8_t pin) : pin(pin), input_buffer(BUFFER_SIZE), irrec(pin), results() {
+            BufferIO<3, 2> input_buffer(BUFFER_SIZE); 
+        };
 
         //char* getButtonsPressed(); // To be implemented
         void setup();
-        uint32_t readSignal(); // Receive and Read signals
-        String getStringfiedState();
+        void beginReceiveInput();
         void resetState();
+        String getStringfiedState();
+
+        static void ISRHandler() {
+            if(currentInstance == nullptr) return;
+            currentInstance->inputInterruptHandler();
+        }
 
     private:
-        IRrecv* irrec;
-        decode_results* results;
+        static IRdecoder* currentInstance;
+        bool wasInitialized = false;
+        bool isActive = false;
 
+        uint8_t pin;
+        uint8_t control_state[ROWS][COLS]{};
+        uint8_t symbol[3][2]{};
+
+        IRrecv irrec;
+        decode_results results;
+
+        void endReceiveInput();
+        volatile uint32_t readSignal(); // volatile used, since input could change
+
+        void updateCurrentSymbol();
         uint32_t indexToButtonVal(uint8_t index1, uint8_t index2);
-        uint8_t* buttonValToIndex(uint32_t buttonVal); // Don't forget to free memory when not needed!
+        uint8_t* buttonValToIndex(uint32_t buttonVal); // Don't forget to free memory when not needed
+        void inputInterruptHandler();
 };
 
 #endif
