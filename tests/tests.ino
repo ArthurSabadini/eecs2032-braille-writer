@@ -12,7 +12,11 @@ void setup() {
 
 void loop() {
     // Debugin interrupt functionality
-    String state = decoder.getStringfiedState(); 
-    Serial.println(state);
-    delay(ACTION_WINDON_MS);
+    String bufferState = decoder.getStringfiedSymbol();
+    
+    Serial.print("Current Buffer State: ");
+    Serial.println(bufferState);
+
+   // delay(ACTION_WINDON_MS);
+   delay(2000);
 }
