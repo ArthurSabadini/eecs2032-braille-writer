@@ -1,9 +1,11 @@
+// This sketch is for testing the solenoid drivers activation
 #include <IRremote.h>
 
 #define ACTION_WINDOW_MS 250
 #define IR_PIN 2
-#define SOL_PIN 8 // Used for direct tests only
+#define SOL_PIN 8 // Used for direct tests only, ignored when shift register is used
 
+// Used for shift register test
 #define DS_PIN 4
 #define LATCH_PIN 5
 #define CLOCK_PIN 6
@@ -28,7 +30,6 @@ void setup() {
     irrec.enableIRIn();
 
     //pinMode(SOL_PIN, OUTPUT);
-
     pinMode(DS_PIN, OUTPUT);
     pinMode(CLOCK_PIN, OUTPUT);
     pinMode(LATCH_PIN, OUTPUT);
@@ -37,8 +38,8 @@ void setup() {
 }
 
 void loop() {
+    // Updating solenoid state
     //digitalWrite(SOL_PIN, sol_state);
-
     digitalWrite(LATCH_PIN, LOW);
     shiftOut(DS_PIN, CLOCK_PIN, LSBFIRST, state);
     digitalWrite(LATCH_PIN, HIGH);

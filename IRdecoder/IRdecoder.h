@@ -157,6 +157,7 @@ BufferIO<Rows, Cols>& BufferIO<Rows, Cols>::operator=(const BufferIO& other) {
 class IRdecoder {
     public: 
         BufferIO<3, 2> input_buffer;
+        bool isInInputMode = false;
 
         // Buttons defined for I/O functionality
         const static uint32_t NEXT_WORD = FAST_FORWARD;
@@ -165,7 +166,6 @@ class IRdecoder {
 
         IRdecoder(uint8_t pin) : pin(pin), input_buffer(BUFFER_SIZE), irrec(pin), results() {};
 
-        //char* getButtonsPressed(); // To be implemented
         void setup();
         void beginReceiveInput();
         void resetState();

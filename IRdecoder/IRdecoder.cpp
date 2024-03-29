@@ -14,6 +14,7 @@ void IRdecoder::beginReceiveInput() {
     if(!isActive) { irrec.resume(); isActive = true; }
 
     // This was needed to convert inputInterruptHandler to void(*)(), as required for attachInterrupt
+    isInInputMode = true;
     currentInstance = this;
     attachInterrupt(digitalPinToInterrupt(pin), ISRHandler, CHANGE);
 }
@@ -24,6 +25,7 @@ void IRdecoder::endReceiveInput() {
 
     currentInstance = nullptr;
     isActive = false;
+    isInInputMode = false;
 }
 
 // Mainly for debug purposes
@@ -42,16 +44,17 @@ String IRdecoder::getStringfiedState() {
     return state;
 }
 
+// mainly for debug pusposes
 String IRdecoder::getStringfiedSymbol() {
     String state = "[";
 
-    for(uint8_t i = 0; i < ROWS; i++) {
+    for(uint8_t i = 0; i < 3; i++) {
         state += "[";
-        for(uint8_t j = 0; j < COLS; j++) {
+        for(uint8_t j = 0; j < 2; j++) {
             state += String(symbol[i][j]);
-            if (j < COLS - 1) state += ", ";
+            if (j < 1) state += ", ";
         }
-        state += (i == ROWS - 1) ? "]" : "], ";
+        state += (i == 2) ? "]" : "], ";
     } 
     state += "]";
     return state;
