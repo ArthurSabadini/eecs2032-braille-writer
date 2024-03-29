@@ -21,10 +21,11 @@ private:
 public:
     BufferIO(uint8_t size) : capacity(size), bufferSize(0) {
         this->buffer = new uint8_t[size][Rows][Cols]{};
-    }
+    };
 
-    ~BufferIO() { delete[] buffer; }
+    ~BufferIO() { delete[] buffer; };
 
+    String getStringfiedState(uint8_t idx);
     void add(const uint8_t element[Rows][Cols]);
     uint8_t size() const { return bufferSize; }
     bool empty() { return size() == 0; }
@@ -50,23 +51,41 @@ void BufferIO<Rows, Cols>::clear(uint8_t dst[Rows][Cols]) {
             dst[row][col] = 0;
 }
 
+// Again, mainly for debugging purposes
+template<uint8_t Rows, uint8_t Cols>
+String BufferIO<Rows, Cols>::getStringfiedState(uint8_t idx) {
+    if(idx >= bufferSize) return "";
+    String state = "[";
+
+    for(uint8_t i = 0; i < Rows; i++) {
+        state += "[";
+        for(uint8_t j = 0; j < Cols; j++) {
+            state += String(buffer[idx][i][j]);
+            if (j < Cols - 1) state += ", ";
+        }
+        state += (i == Rows - 1) ? "]" : "], ";
+    } 
+    state += "]";
+    return state;
+}
+
 template<uint8_t Rows, uint8_t Cols>
 void BufferIO<Rows, Cols>::add(const uint8_t element[Rows][Cols]) {
     if (bufferSize >= capacity) return;
-    copy(element, buffer[size()]);
+    copy(element, buffer[bufferSize]);
     bufferSize++;
 }
 
 template<uint8_t Rows, uint8_t Cols>
 void BufferIO<Rows, Cols>::get(uint8_t index, uint8_t element[Rows][Cols]) const {
-    if (index >= size()) return;  // Index out of bounds
+    if (index >= bufferSize) return;  // Index out of bounds
     copy(buffer[index], element);
 }
 
 template<uint8_t Rows, uint8_t Cols>
 void BufferIO<Rows, Cols>::pop() {
-    if (size() <= 0) return;
-    remove(size() - 1);
+    if (bufferSize <= 0) return;
+    remove(bufferSize - 1);
 }
 
 template<uint8_t Rows, uint8_t Cols>
@@ -75,7 +94,7 @@ void BufferIO<Rows, Cols>::remove(int8_t index) {
     clear(buffer[index]);
     bufferSize--;
 
-    if (index == size() - 1) return;
+    if (index == bufferSize - 1) return;
     for (uint8_t idx = index; idx < size() - 1; idx++) {
         copy(buffer[index + 1], buffer[index]);
     }
@@ -134,6 +153,7 @@ BufferIO<Rows, Cols>& BufferIO<Rows, Cols>::operator=(const BufferIO& other) {
 #define NINE 0xFF52AD
 #define UNDEFINED 0xFFFFFF
 
+// Main class definition
 class IRdecoder {
     public: 
         BufferIO<3, 2> input_buffer;
@@ -143,18 +163,17 @@ class IRdecoder {
         const static uint32_t DELETE_WORD = REWIND;
         const static uint32_t CONCLUDE = POWER;
 
-        IRdecoder(uint8_t pin) : pin(pin), input_buffer(BUFFER_SIZE), irrec(pin), results() {
-            BufferIO<3, 2> input_buffer(BUFFER_SIZE); 
-        };
+        IRdecoder(uint8_t pin) : pin(pin), input_buffer(BUFFER_SIZE), irrec(pin), results() {};
 
         //char* getButtonsPressed(); // To be implemented
         void setup();
         void beginReceiveInput();
         void resetState();
         String getStringfiedState();
+        String getStringfiedSymbol();
 
         static void ISRHandler() {
-            if(currentInstance == nullptr) return;
+            if(!currentInstance) return;
             currentInstance->inputInterruptHandler();
         }
 

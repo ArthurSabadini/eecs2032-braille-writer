@@ -42,17 +42,28 @@ String IRdecoder::getStringfiedState() {
     return state;
 }
 
+String IRdecoder::getStringfiedSymbol() {
+    String state = "[";
+
+    for(uint8_t i = 0; i < ROWS; i++) {
+        state += "[";
+        for(uint8_t j = 0; j < COLS; j++) {
+            state += String(symbol[i][j]);
+            if (j < COLS - 1) state += ", ";
+        }
+        state += (i == ROWS - 1) ? "]" : "], ";
+    } 
+    state += "]";
+    return state;
+}
+
 // Update the current symbol on input, after control_state update
 void IRdecoder::updateCurrentSymbol() {
     // Updating the current braille symbol inputted
-    symbol[0][1] = control_state[ROWS-3][COLS-2];
-    symbol[0][1] = control_state[ROWS-3][COLS-1];
-
-    symbol[1][1] = control_state[ROWS-2][COLS-2];
-    symbol[1][1] = control_state[ROWS-2][COLS-1];
-
-    symbol[2][1] = control_state[ROWS-1][COLS-2];
-    symbol[2][1] = control_state[ROWS-1][COLS-1];
+    // The symbol input buttons is the lower right 3x2 buttons in the remote control
+    for(uint8_t row = 0; row < 3; row++)
+        for(uint8_t col = 0; col < 2; col++)
+            symbol[row][col] = control_state[ROWS+row-3][COLS+col-2];
 }
 
 void IRdecoder::resetState() {
@@ -90,7 +101,7 @@ uint32_t IRdecoder::indexToButtonVal(uint8_t index1, uint8_t index2) {
         case 18: return SEVEN;
         case 19: return EIGHT;
         case 20: return NINE;
-        default: return 0xFFFFFF;
+        default: return UNDEFINED;
     }
 }
 
