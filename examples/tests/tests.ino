@@ -21,7 +21,7 @@ void ISRHandler() {
     if(!successful) return;
 
     sol_state = !sol_state;
-    sol_state ? state = B01000000: state = B0;
+    sol_state ? state = B00100000: state = B0;
 
     irrec.resume();
 }

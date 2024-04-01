@@ -13,5 +13,6 @@ set(SOURCE_FILES
     IRdecoder/IRdecoder.cpp
     tests/tests.ino
     tests/test1/test1.ino
+    translation/translation.ino
 )
 

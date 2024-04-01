@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <IRdecoder.h>
 
 // Define pins
@@ -6,40 +5,58 @@
 #define SOLENOID_PINS 6 // Number of solenoid pins
 #define DISPLAY_PIN 13 // LED for display
 #define POT_PIN A0 // Potentiometer pin
+#define IR_PIN 2
+#define DELAY 250
 
 // Braille for lowercase letters
-const char* braille[] = {
-    "B10000000", // a
-    "B10100000", // b
-    "B11000000", // c
-    "B11010000", // d
-    "B10010000", // e
-    "B11100000", // f
-    "B11110000", // g
-    "B10110000", // h
-    "B01100000", // i
-    "B01110000", // j
-    "B10001000", // k
-    "B10101000", // l
-    "B11001000", // m
-    "B11011000", // n
-    "B10011000", // o
-    "B11101000", // p
-    "B11111000", // q
-    "B10111000", // r
-    "B01101000", // s
-    "B01111000", // t
-    "B10001100", // u
-    "B10101100", // v
-    "B01110100", // w
-    "B11001100", // x
-    "B11011100", // y
-    "B10011100"  // z
-    "B00000000"  // space
+const byte braille[] = {
+    B10000000, // a
+    B10100000, // b
+    B11000000, // c
+    B11010000, // d
+    B10010000, // e
+    B11100000, // f
+    B11110000, // g
+    B10110000, // h
+    B01100000, // i
+    B01110000, // j
+    B10001000, // k
+    B10101000, // l
+    B11001000, // m
+    B11011000, // n
+    B10011000, // o
+    B11101000, // p
+    B11111000, // q
+    B10111000, // r
+    B01101000, // s
+    B01111000, // t
+    B10001100, // u
+    B10101100, // v
+    B01110100, // w
+    B11001100, // x
+    B11011100, // y
+    B10011100, // z
+    B00000000, // space
 };
 
 // Initialize IRdecoder instance
-IRdecoder irDecoder(/* IR sensor pin */);
+IRdecoder irDecoder(IR_PIN);
+uint8_t symbol_buffer[3][2]{};
+byte serialDataFormat[7]{};
+
+void convertToByte(uint8_t data[3][2], byte serialDataFormat[7]) {
+  int index = 0;
+
+  // Convert data to byte format
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 2; j++) {
+      serialDataFormat[index++] = data[i][j]; // Actual data
+    }
+  }
+
+  // Add 0x00 at the end
+  serialDataFormat[index] = 0x00;
+}
 
 void setup() {
   // Read potentiometer value and map it to delay range (500 to 2000 ms)
@@ -62,6 +79,7 @@ void setup() {
     pinMode(i, OUTPUT);
   }
 }
+
 void loop() {
   // Check for IR input and process if available
   if (irDecoder.isInInputMode) {
@@ -74,8 +92,11 @@ void loop() {
       if (!irDecoder.input_buffer.empty()) {
           // Display characters as the user goes through the incoming characters
           while (!irDecoder.input_buffer.empty()) {
-              displayCharacter(irDecoder.input_buffer.get(0));
-              delay(delayValue); // Display delay 
+              irDecoder.input_buffer.get(0, symbol_buffer);
+              convertToByte(symbol_buffer, serialDataFormat);
+              
+              displayCharacter(serialDataFormat);
+              delay(DELAY); // Display delay 
               irDecoder.input_buffer.pop();
           }
       }
@@ -86,7 +107,7 @@ void loop() {
 void displayCharacter(uint8_t brailleIndex) {
 
 // Adjust this part for shift register
-  const char* braillePattern = braille[brailleIndex];
+  const byte braillePattern = braille[brailleIndex];
   for (int i = 0; i < strlen(braillePattern); ++i) {
       if (braillePattern[i] == '1') {
           digitalWrite(i + 2, HIGH); // Assuming solenoid pins start from pin 2

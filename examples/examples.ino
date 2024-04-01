@@ -11,7 +11,7 @@ void setup() {
 }
 
 void loop() {
-    // Debugin interrupt functionality
+    // Debbuging interrupt functionality
     if(decoder.isInInputMode) {
         // While in input mode, wait for input to be completed 
         String bufferState = decoder.getStringfiedSymbol();
