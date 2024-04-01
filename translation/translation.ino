@@ -2,9 +2,12 @@
 
 // Define pins
 #define BUTTON_PIN 11 // Button pin for triggering actions
-#define SOLENOID_PINS 6 // Number of solenoid pins
 #define DISPLAY_PIN 13 // LED for display
 #define POT_PIN A0 // Potentiometer pin
+
+#define DS_PIN 4
+#define LATCH_PIN 5
+#define CLOCK_PIN 6
 #define IR_PIN 2
 #define DELAY 250
 
@@ -42,20 +45,22 @@ const byte braille[] = {
 // Initialize IRdecoder instance
 IRdecoder irDecoder(IR_PIN);
 uint8_t symbol_buffer[3][2]{};
-byte serialDataFormat[7]{};
+byte serialDataFormat = B0;
 
-void convertToByte(uint8_t data[3][2], byte serialDataFormat[7]) {
-  int index = 0;
+void convertToByte(uint8_t data[3][2], byte formattedByte) {
+    int index = 0;
+    formattedByte = B0;
 
-  // Convert data to byte format
-  for (int i = 0; i < 3; i++) {
-    for (int j = 0; j < 2; j++) {
-      serialDataFormat[index++] = data[i][j]; // Actual data
+    // Convert data to byte format
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 2; j++) {
+            formattedByte = (formattedByte << 1) | (data[i][j] & 0x01);
+        }
     }
-  }
 
-  // Add 0x00 at the end
-  serialDataFormat[index] = 0x00;
+    // Add 0x00 at the end
+    formattedByte = (formattedByte << 1) | (0 & 0x01);
+    formattedByte = (formattedByte << 1) | (0 & 0x01);
 }
 
 void setup() {
@@ -74,10 +79,10 @@ void setup() {
   // Initialize display pin
   pinMode(DISPLAY_PIN, OUTPUT);
 
-  // Initialize solenoid pins
-  for (int i = 2; i <= SOLENOID_PINS + 1; ++i) {
-    pinMode(i, OUTPUT);
-  }
+  // Initialize shift register pins
+  pinMode(DS_PIN, OUTPUT);
+  pinMode(LATCH_PIN, OUTPUT);
+  pinMode(CLOCK_PIN, OUTPUT);
 }
 
 void loop() {
@@ -104,17 +109,13 @@ void loop() {
 }
 
 // Function to display a character on the display
-void displayCharacter(uint8_t brailleIndex) {
+void displayCharacter(byte serialDataFormat) {
+  //const char* braillePattern = braille[brailleIndex];
+  // Send the solenoid pattern via shift register
+  digitalWrite(LATCH_PIN, LOW);
+  shiftOut(DS_PIN, CLOCK_PIN, LSBFIRST, serialDataFormat); // Only sending the first byte
+  digitalWrite(LATCH_PIN, HIGH);
 
-// Adjust this part for shift register
-  const byte braillePattern = braille[brailleIndex];
-  for (int i = 0; i < strlen(braillePattern); ++i) {
-      if (braillePattern[i] == '1') {
-          digitalWrite(i + 2, HIGH); // Assuming solenoid pins start from pin 2
-      } else {
-          digitalWrite(i + 2, LOW);
-      }
-  }
   // Assuming you're using an LED for display
   digitalWrite(DISPLAY_PIN, HIGH);
   delay(500); // Display duration
