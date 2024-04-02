@@ -42,7 +42,7 @@ void displayCharacter(byte serialDataFormat) {
 
   // Assuming you're using an LED for display
   digitalWrite(DISPLAY_PIN, HIGH);
-  delay(500); // Display duration
+  delay(DELAY); // Display duration
   digitalWrite(DISPLAY_PIN, LOW);
 }
 

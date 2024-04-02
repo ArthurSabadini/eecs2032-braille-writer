@@ -161,7 +161,7 @@ void IRdecoder::inputInterruptHandler() {
             break; 
         case IRdecoder::DELETE_WORD:
             // Delete current word
-            if(!input_buffer.empty()) input_buffer.pop(); 
+            if(!input_buffer.empty()) input_buffer.pop_back(); 
             resetState();
             break;
         case IRdecoder::CONCLUDE:

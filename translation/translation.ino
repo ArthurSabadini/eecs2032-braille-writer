@@ -85,7 +85,7 @@ void loop() {
             // Display characters as the user goes through the incoming characters
             while (!irDecoder.input_buffer.empty()) {
                 // Get last element
-                irDecoder.input_buffer.get(irDecoder.input_buffer.size()-1, symbol_buffer);
+                irDecoder.input_buffer.get(0, symbol_buffer);
                 serialDataFormat = convertToByte(symbol_buffer);
 
                 // Not actuating the solenoids, for testing
@@ -94,7 +94,7 @@ void loop() {
                 Serial.print(currentCharacter);
                 //Serial.println(serialDataFormat, HEX);
                 delay(DELAY); // Display delay 
-                irDecoder.input_buffer.pop();
+                irDecoder.input_buffer.pop_front();
             }
         }
         exit(0);
