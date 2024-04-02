@@ -57,7 +57,7 @@ EQUALS = =
 CMAKE_SOURCE_DIR = /Users/Arthur/Documents/Arduino/eecs2032/Project
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/Arthur/Documents/Arduino/eecs2032/Project/build
+CMAKE_BINARY_DIR = /Users/Arthur/Documents/Arduino/eecs2032/Project/build2
 
 #=============================================================================
 # Directory level rules for the build root directory

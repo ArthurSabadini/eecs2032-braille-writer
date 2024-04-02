@@ -11,8 +11,9 @@ set(ARDUINO_DEFAULT_PROGRAMMER arduino)
 # Add source files for the entire project
 set(SOURCE_FILES
     IRdecoder/IRdecoder.cpp
-    tests/tests.ino
-    tests/test1/test1.ino
-    translation/translation.ino
+    #examples/examples.ino
+    #examples/tests/test1/test1.ino
+    #translation/translation.ino
+    translation/BrailleConverter/BrailleConverter.cpp
 )
 

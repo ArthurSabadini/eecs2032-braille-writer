@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/Arthur/Documents/Arduino/eecs2032/Project/build/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/Arthur/Documents/Arduino/eecs2032/Project/build2/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

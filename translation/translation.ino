@@ -1,5 +1,6 @@
 #include <IRdecoder.h>
-#include <MegaTimer.h>
+#include <TimerOne.h>
+#include "BrailleConverter.h"
 #include "converter.h"
 
 // Braille for lowercase letters
@@ -89,7 +90,9 @@ void loop() {
 
                 // Not actuating the solenoids, for testing
                 //displayCharacter(serialDataFormat);
-                Serial.println(serialDataFormat, HEX);
+                String currentCharacter = brailleConverter.getTextFromSymbol(serialDataFormat);
+                Serial.print(currentCharacter);
+                //Serial.println(serialDataFormat, HEX);
                 delay(DELAY); // Display delay 
                 irDecoder.input_buffer.pop();
             }
