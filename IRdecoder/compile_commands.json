@@ -1,8 +1,0 @@
-[
-    {
-        "directory": "/Users/Arthur/Documents/Arduino/eecs2032/Project/IRdecoder",
-        "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -Irelative -I/Users/Arthur/Library/Arduino15/packages/arduino/hardware/avr/1.8.6/cores/arduino -I/Users/Arthur/Documents/Arduino/libraries/IRremote/src -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.5 -o CMakeFiles/IRdecoder.dir/IRdecoder.cpp.o -c /Users/Arthur/Documents/Arduino/eecs2032/Project/IRdecoder/IRdecoder.cpp",
-        "file": "/Users/Arthur/Documents/Arduino/eecs2032/Project/IRdecoder/IRdecoder.cpp",
-        "output": "CMakeFiles/IRdecoder.dir/IRdecoder.cpp.o"
-    }
-]
