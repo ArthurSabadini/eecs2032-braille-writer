@@ -1,3 +1,5 @@
+/* This file is used to define some useful functions, definitions and macros */
+
 #ifndef CONVERTER_H
 #define CONVERTER_H
 
@@ -15,7 +17,7 @@
 #define IR_PIN 2
 #define DELAY 250
 
-#include <Arduino.h>
+#include <Arduino.h> // Only needed for lsp
 
 byte convertToByte(uint8_t data[3][2]) {
     byte formattedByte = 0;
@@ -28,8 +30,8 @@ byte convertToByte(uint8_t data[3][2]) {
     }
 
     // Add 0x00 at the end; the shift register expects input to be 8-bits
-    formattedByte = (formattedByte << 1) | 0;
-    formattedByte = (formattedByte << 1) | 0;
+    formattedByte = (formattedByte << 1);
+    formattedByte = (formattedByte << 1);
     return formattedByte;
 }
 

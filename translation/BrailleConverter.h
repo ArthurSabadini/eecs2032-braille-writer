@@ -1,3 +1,7 @@
+/*
+ *  This file contains the BrailleConverter class, that converts serial data to text.
+ * */
+
 #ifndef BRAILLE_CONVERTER_H
 #define BRAILLE_CONVERTER_H
 
@@ -5,7 +9,7 @@
 
 class BrailleConverter {
     private:
-        static const uint8_t SIZE = 27;
+        static const uint8_t SIZE = 27; // Number of total symbols, need to be updated if we add symbols
         struct BrailleTextPair {
             byte symbol;
             String text;
@@ -20,6 +24,7 @@ class BrailleConverter {
     public:
         static BrailleConverter& getInstance();
         String getTextFromSymbol(byte symbol) const;
+        String getTextFromSymbols(const byte symbols[], uint8_t size) const;
 };
 
 BrailleConverter& brailleConverter = BrailleConverter::getInstance();
@@ -66,6 +71,14 @@ String BrailleConverter::getTextFromSymbol(byte symbol) const {
         text = BrailleConverter::items[idx].text;
         break;
     }
+
+    return text;
+}
+
+String BrailleConverter::getTextFromSymbols(const byte symbols[], uint8_t size) const {
+    String text = "";
+    for(uint8_t idx = 0; idx < size; idx++) 
+        text += getTextFromSymbol(symbols[idx]);
 
     return text;
 }
