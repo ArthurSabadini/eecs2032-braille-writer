@@ -1,18 +1,6 @@
 #include <IRdecoder.h>
-
-// Define pins
-#define BUTTON_PIN 11 // Button pin for triggering actions
-#define DISPLAY_PIN 13 // LED for display
-#define POT_PIN A0 // Potentiometer pin
-
-// Shift Register Connections
-#define DS_PIN 4
-#define LATCH_PIN 5
-#define CLOCK_PIN 6
-
-// InfraRed Module Connection
-#define IR_PIN 2
-#define DELAY 250
+#include <MegaTimer.h>
+#include "converter.h"
 
 // Braille for lowercase letters
 const byte braille[] = {
@@ -45,25 +33,15 @@ const byte braille[] = {
     B00000000, // space
 };
 
+
 // Initialize IRdecoder instance
 IRdecoder irDecoder(IR_PIN);
 uint8_t symbol_buffer[3][2]{};
 byte serialDataFormat = B0;
 
-byte convertToByte(uint8_t data[3][2]) {
-    byte formattedByte = 0;
-
-    // Convert data to byte format
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 2; j++) {
-            formattedByte = (formattedByte << 1) | data[i][j];
-        }
-    }
-
-    // Add 0x00 at the end, since the shift register expects input to be 8-bits
-    formattedByte = (formattedByte << 1) | 0;
-    formattedByte = (formattedByte << 1) | 0;
-    return formattedByte;
+void bufferPrintISR() {
+    String state = irDecoder.getStringfiedSymbol();
+    Serial.println(state);
 }
 
 void setup() {
@@ -89,16 +67,15 @@ void setup() {
   pinMode(CLOCK_PIN, OUTPUT);
 
   irDecoder.beginReceiveInput();
+
+  Timer1.initialize(1000000);
+  Timer1.attachInterrupt(bufferPrintISR);
 }
 
 void loop() {
     // Check for IR input and process if available
-    if(irDecoder.isInInputMode) {
-        String state = irDecoder.getStringfiedSymbol();
-        Serial.println(state);
-        //delay(DELAY);
-        return;
-    }
+    if(irDecoder.isInInputMode) return;
+    Timer1.stop();
 
     // Check if the button is pressed
     //if (digitalRead(BUTTON_PIN) == LOW) {
@@ -106,6 +83,7 @@ void loop() {
         if (!irDecoder.input_buffer.empty()) {
             // Display characters as the user goes through the incoming characters
             while (!irDecoder.input_buffer.empty()) {
+                // Get last element
                 irDecoder.input_buffer.get(irDecoder.input_buffer.size()-1, symbol_buffer);
                 serialDataFormat = convertToByte(symbol_buffer);
 
@@ -118,17 +96,4 @@ void loop() {
         }
         exit(0);
     //}
-}
-
-// Function to display a character on the display
-void displayCharacter(byte serialDataFormat) {
-  // Send the solenoid pattern via shift register
-  digitalWrite(LATCH_PIN, LOW);
-  shiftOut(DS_PIN, CLOCK_PIN, LSBFIRST, serialDataFormat); // Only sending the first byte
-  digitalWrite(LATCH_PIN, HIGH);
-
-  // Assuming you're using an LED for display
-  digitalWrite(DISPLAY_PIN, HIGH);
-  delay(500); // Display duration
-  digitalWrite(DISPLAY_PIN, LOW);
 }
