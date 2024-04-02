@@ -6,14 +6,8 @@
     },
 
     {
-        "directory": "/Users/Arthur/Documents/Arduino/eecs2032/Project/translation/BrailleConverter",
-        "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -I/Users/Arthur/Library/Arduino15/packages/arduino/hardware/avr/1.8.6/cores/arduino -I/Users/Arthur/Library/Arduino15/packages/arduino/hardware/avr/1.8.6/variants -I/Users/Arthur/Documents/Arduino/libraries/IRremote/src -I/Users/Arthur/Documents/Arduino/libraries/IRdecoder -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.5  -c /Users/Arthur/Documents/Arduino/eecs2032/Project/BrailleConverter/BrailleConverter.cpp",
-        "file": "/Users/Arthur/Documents/Arduino/eecs2032/Project/translation/BrailleConverter/BrailleConverter.cpp",
-    },
-
-    {
         "directory": "/Users/Arthur/Documents/Arduino/eecs2032/Project/translation",
-        "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -I/Users/Arthur/Library/Arduino15/packages/arduino/hardware/avr/1.8.6/cores/arduino -I/Users/Arthur/Library/Arduino15/packages/arduino/hardware/avr/1.8.6/variants -I/Users/Arthur/Documents/Arduino/libraries/IRremote/src -I/Users/Arthur/Documents/Arduino/eecs2032/Project/translation/BrailleConverter -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.5  -c /Users/Arthur/Documents/Arduino/eecs2032/Project/BufferIO/BufferIO.cpp",
+        "command": "/Library/Developer/CommandLineTools/usr/bin/c++ -I/Users/Arthur/Library/Arduino15/packages/arduino/hardware/avr/1.8.6/cores/arduino -I/Users/Arthur/Library/Arduino15/packages/arduino/hardware/avr/1.8.6/variants -I/Users/Arthur/Documents/Arduino/libraries/IRremote/src -I/Users/Arthur/Documents/Arduino/libraries/LiquidCrystal/src -I/Users/Arthur/Documents/Arduino/eecs2032/Project/translation/BrailleConverter -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk -mmacosx-version-min=12.5  -c /Users/Arthur/Documents/Arduino/eecs2032/Project/BufferIO/BufferIO.cpp",
         "file": "/Users/Arthur/Documents/Arduino/eecs2032/Project/translation/translation.ino",
-    }
+    },
 ]

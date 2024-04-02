@@ -3,6 +3,8 @@
 #ifndef CONVERTER_H
 #define CONVERTER_H
 
+#include <Arduino.h> // Only needed for lsp
+
 // Define pins
 #define BUTTON_PIN 11 // Button pin for triggering actions
 #define DISPLAY_PIN 13 // LED for display
@@ -16,8 +18,6 @@
 // InfraRed Module Connection
 #define IR_PIN 2
 #define DELAY 250
-
-#include <Arduino.h> // Only needed for lsp
 
 byte convertToByte(uint8_t data[3][2]) {
     byte formattedByte = 0;
@@ -36,7 +36,7 @@ byte convertToByte(uint8_t data[3][2]) {
 }
 
 // Function to display a character on the display
-void displayCharacter(byte serialDataFormat) {
+void solenoidsWriteCharacter(byte serialDataFormat) {
   // Send the solenoid pattern via shift register
   digitalWrite(LATCH_PIN, LOW);
   shiftOut(DS_PIN, CLOCK_PIN, LSBFIRST, serialDataFormat); // Only sending the first byte

@@ -2,6 +2,7 @@
 
 #define DELAY 250
 
+// Shift Register inputs
 #define DS_PIN 4
 #define CLOCK_PIN 6
 #define LATCH_PIN 5
