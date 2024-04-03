@@ -16,14 +16,19 @@ int delayValue = 0;
 
 // We can use this interrupt to print input to LCD display
 void bufferPrintISR() {
+    // Update LCD display
     String state = irDecoder.getStringfiedSymbol();
-    Serial.println(state);
 
-    // Update LCD display. Uncomment this section if LCD is implemented
-    uint8_t size = irDecoder.input_buffer.size();
-    String message = "";
+    // Writing input state
+    if(!irDecoder.input_buffer.empty()) lcd.clear();
+    lcd.setCursor(0, 1);
+    lcd.print("Braille: " + state);
 
+    // Only write message if input is confirmed
     if(irDecoder.input_buffer.empty()) return;
+
+    String message = "";
+    uint8_t size = irDecoder.input_buffer.size();
 
     for(uint8_t idx = 0; idx < size; idx++) {
         irDecoder.input_buffer.get(idx, symbol_buffer);
@@ -33,27 +38,23 @@ void bufferPrintISR() {
     }
 
     // Writing message
-    lcd.clear();
     lcd.setCursor(0, 0);
-    lcd.print(message);
+    lcd.print("Text: " + message);
 
     serialDataFormat = B0;
 }
 
 void setup() {
-    Serial.begin(9600);
     // Read potentiometer value and map it to delay range (500 to 2000 ms)
-    delayValue = map(analogRead(POT_PIN), 0, 1023, 500, 2000);
+    Serial.begin(9600); // No clue why, but if this is removed the final section of the loop is never reached
+    //delayValue = map(analogRead(POT_PIN), 0, 1023, 500, 2000);
 
     // Initialize IR sensor setup
     irDecoder.setup();
 
     // Initialize LCD display
     lcd.begin(16, 2);
-    lcd.print("Please Begin");
-    lcd.setCursor(0, 1);
-    lcd.print("Input");
-    lcd.setCursor(0, 0);
+    lcd.print("Begin Input");
 
     // Initialize button pin
     //pinMode(BUTTON_PIN, INPUT_PULLUP);
@@ -87,15 +88,17 @@ void loop() {
     // Display and process the character
     if(irDecoder.input_buffer.empty()) exit(0);
 
+    lcd.setCursor(0, 1);
+    lcd.print("Translating ...");
+
     // Display characters as the user goes through the incoming characters
     while (!irDecoder.input_buffer.empty()) {
         // Get first element
         irDecoder.input_buffer.get(0, symbol_buffer);
         byte serialDataFormat = convertToByte(symbol_buffer);
-        String currentCharacter = brailleConverter.getTextFromSymbol(serialDataFormat);
 
         // Not actuating the solenoids, for testing
-        Serial.print(currentCharacter);
+        //solenoidsWriteCharacter(serialDataFormat);
         delay(DELAY); // Display delay 
         irDecoder.input_buffer.pop_front();
     }
