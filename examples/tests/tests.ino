@@ -5,10 +5,10 @@
 #define IR_PIN 2
 #define SOL_PIN 8 // Used for direct tests only, ignored when shift register is used
 
-// Used for shift register test
+// Shift Register Connections
 #define DS_PIN 4
-#define LATCH_PIN 5
-#define CLOCK_PIN 6
+#define LATCH_PIN 6
+#define CLOCK_PIN 8
 
 volatile uint8_t sol_state = LOW;
 volatile byte state = B0;
