@@ -133,6 +133,7 @@ BufferIO<Rows, Cols>& BufferIO<Rows, Cols>::operator=(const BufferIO& other) {
 
 // Config Definitions
 #define ACTION_WINDON_MS 250
+#define ACTION_WINDOW_US 250000
 #define BUFFER_SIZE 11 
 #define ROWS 7
 #define COLS 3

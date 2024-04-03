@@ -7,7 +7,7 @@
 
 // Initialize IRdecoder instance
 IRdecoder irDecoder(IR_PIN);
-LiquidCrystal lcd(13, 12, 11, 10, 9, 8);
+LiquidCrystal lcd(RS_PIN, EN_PIN, D4_PIN, D5_PIN, D6_PIN, D7_PIN);
 
 // Dynamic values used throughout the code
 uint8_t symbol_buffer[3][2] {};
@@ -19,7 +19,6 @@ void bufferPrintISR() {
     String state = irDecoder.getStringfiedSymbol();
     Serial.println(state);
 
-    /*
     // Update LCD display. Uncomment this section if LCD is implemented
     uint8_t size = irDecoder.input_buffer.size();
     String message = "";
@@ -34,11 +33,11 @@ void bufferPrintISR() {
     }
 
     // Writing message
+    lcd.clear();
     lcd.setCursor(0, 0);
     lcd.print(message);
 
     serialDataFormat = B0;
-    */
 }
 
 void setup() {
@@ -50,7 +49,11 @@ void setup() {
     irDecoder.setup();
 
     // Initialize LCD display
-    //lcd.begin(16, 2);
+    lcd.begin(16, 2);
+    lcd.print("Please Begin");
+    lcd.setCursor(0, 1);
+    lcd.print("Input");
+    lcd.setCursor(0, 0);
 
     // Initialize button pin
     //pinMode(BUTTON_PIN, INPUT_PULLUP);
@@ -88,7 +91,7 @@ void loop() {
     while (!irDecoder.input_buffer.empty()) {
         // Get first element
         irDecoder.input_buffer.get(0, symbol_buffer);
-        serialDataFormat = convertToByte(symbol_buffer);
+        byte serialDataFormat = convertToByte(symbol_buffer);
         String currentCharacter = brailleConverter.getTextFromSymbol(serialDataFormat);
 
         // Not actuating the solenoids, for testing

@@ -15,6 +15,14 @@
 #define LATCH_PIN 5
 #define CLOCK_PIN 6
 
+// LCD Connections
+#define RS_PIN 33
+#define EN_PIN 37
+#define D4_PIN 41
+#define D5_PIN 45
+#define D6_PIN 49
+#define D7_PIN 53
+
 // InfraRed Module Connection
 #define IR_PIN 2
 #define DELAY 250
