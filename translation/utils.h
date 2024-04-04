@@ -5,11 +5,6 @@
 
 #include <Arduino.h> // Only needed for lsp
 
-// Define pins
-#define BUTTON_PIN 11 // Button pin for triggering actions
-#define DISPLAY_PIN 13 // LED for display
-#define POT_PIN A0 // Potentiometer pin
-
 // Shift Register Connections
 #define DS_PIN 4
 #define LATCH_PIN 6
@@ -23,9 +18,11 @@
 #define D6_PIN 49
 #define D7_PIN 53
 
+
 // InfraRed Module Connection
 #define IR_PIN 2
-#define DELAY 250
+#define DELAY 500
+#define SPACING_DELAY 250
 
 byte convertToByte(uint8_t data[3][2]) {
     byte formattedByte = 0;
@@ -49,11 +46,13 @@ void solenoidsWriteCharacter(byte serialDataFormat) {
   digitalWrite(LATCH_PIN, LOW);
   shiftOut(DS_PIN, CLOCK_PIN, LSBFIRST, serialDataFormat); // Only sending the first byte
   digitalWrite(LATCH_PIN, HIGH);
+  delay(DELAY);
 
-  // Assuming you're using an LED for display
-  digitalWrite(DISPLAY_PIN, HIGH);
-  delay(DELAY); // Display duration
-  digitalWrite(DISPLAY_PIN, LOW);
+  // Write all solenoids low for safety, and characters transition
+  digitalWrite(LATCH_PIN, LOW);
+  shiftOut(DS_PIN, CLOCK_PIN, LSBFIRST, B00000000); // Only sending the first byte
+  digitalWrite(LATCH_PIN, HIGH);
+  delay(SPACING_DELAY);
 }
 
 #endif

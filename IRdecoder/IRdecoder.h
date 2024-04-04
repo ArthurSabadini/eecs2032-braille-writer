@@ -28,7 +28,7 @@ public:
     String getStringfiedState(uint8_t idx);
     void add(const uint8_t element[Rows][Cols]);
     uint8_t size() const { return bufferSize; }
-    bool empty() { return size() == 0; }
+    bool empty() { return bufferSize == 0; }
     void get(uint8_t index, uint8_t element[Rows][Cols]) const;
     void pop_back();
     void pop_front();

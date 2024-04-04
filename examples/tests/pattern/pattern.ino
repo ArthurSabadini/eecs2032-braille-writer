@@ -42,8 +42,8 @@ void writeSerialData(byte data) {
 void loop() {
     if(!begin) return;
 
-    for(int index = 0; index < 6; index++) {
-        writeSerialData(pattern1[index]);
+    for(int index = 0; index < 3; index++) {
+        writeSerialData(pattern2[index]);
         delay(DELAY);
     }
 

@@ -56,7 +56,7 @@ BrailleConverter::BrailleTextPair BrailleConverter::items[] = {
     { B11001100, "x" },
     { B11011100, "y" },
     { B10011100, "z" },
-    { B00000000, " " },
+    { B00000000, "_" },
 };
 
 BrailleConverter& BrailleConverter::getInstance() {
