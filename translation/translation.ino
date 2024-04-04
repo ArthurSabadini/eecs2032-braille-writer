@@ -1,75 +1,72 @@
 #include <IRdecoder.h>
-#include <MegaTimer.h>
-#include "converter.h"
+#include <TimerOne.h>
+#include <LiquidCrystal.h>
 
-// Braille for lowercase letters
-const byte braille[] = {
-    B10000000, // a
-    B10100000, // b
-    B11000000, // c
-    B11010000, // d
-    B10010000, // e
-    B11100000, // f
-    B11110000, // g
-    B10110000, // h
-    B01100000, // i
-    B01110000, // j
-    B10001000, // k
-    B10101000, // l
-    B11001000, // m
-    B11011000, // n
-    B10011000, // o
-    B11101000, // p
-    B11111000, // q
-    B10111000, // r
-    B01101000, // s
-    B01111000, // t
-    B10001100, // u
-    B10101100, // v
-    B01110100, // w
-    B11001100, // x
-    B11011100, // y
-    B10011100, // z
-    B00000000, // space
-};
-
+#include "BrailleConverter.h"
+#include "utils.h" // Add any other functions or definitions in utils.h
 
 // Initialize IRdecoder instance
 IRdecoder irDecoder(IR_PIN);
-uint8_t symbol_buffer[3][2]{};
-byte serialDataFormat = B0;
+LiquidCrystal lcd(RS_PIN, EN_PIN, D4_PIN, D5_PIN, D6_PIN, D7_PIN);
 
+// Dynamic values used throughout the code
+uint8_t symbol_buffer[3][2] {};
+byte serialDataFormat = B0;
+int delayValue = 0;
+
+// We use this interrupt to print input to LCD display
 void bufferPrintISR() {
+    // Update LCD display
     String state = irDecoder.getStringfiedSymbol();
-    Serial.println(state);
+
+    // Writing input state
+    if(!irDecoder.input_buffer.empty()) lcd.clear();
+    lcd.setCursor(0, 1);
+    lcd.print("Braille: " + state);
+
+    // Only write message if input is confirmed
+    if(irDecoder.input_buffer.empty()) return;
+
+    String message = "";
+    uint8_t size = irDecoder.input_buffer.size();
+
+    // Translation input to english
+    for(uint8_t idx = 0; idx < size; idx++) {
+        irDecoder.input_buffer.get(idx, symbol_buffer);
+        serialDataFormat = convertToByte(symbol_buffer);
+        String currentCharacter = brailleConverter.getTextFromSymbol(serialDataFormat);
+        message += currentCharacter;
+    }
+
+    // Writing english message
+    lcd.setCursor(0, 0);
+    lcd.print("Text: " + message);
+
+    serialDataFormat = B0;
 }
 
 void setup() {
-  Serial.begin(9600);
-  // Read potentiometer value and map it to delay range (500 to 2000 ms)
-  int delayValue = map(analogRead(POT_PIN), 0, 1023, 500, 2000);
+    // No clue why, but if this is removed the final section of the loop is never reached
+    Serial.begin(9600); 
 
-  // Initialize IR sensor setup
-  irDecoder.setup();
+    // Initialize IR sensor setup
+    irDecoder.setup();
 
-  // Initialize button pin
-  //pinMode(BUTTON_PIN, INPUT_PULLUP);
+    // Initialize LCD display
+    lcd.begin(16, 2);
+    lcd.print("Begin Input");
 
-  // Initialize potentiometer pin
-  //pinMode(POT_PIN, INPUT);
+    // Initialize shift register pins
+    pinMode(DS_PIN, OUTPUT);
+    pinMode(LATCH_PIN, OUTPUT);
+    pinMode(CLOCK_PIN, OUTPUT);
 
-  // Initialize display pin
-  //pinMode(DISPLAY_PIN, OUTPUT);
+    irDecoder.beginReceiveInput();
+    solenoidsWriteCharacter(B00000000);
 
-  // Initialize shift register pins
-  pinMode(DS_PIN, OUTPUT);
-  pinMode(LATCH_PIN, OUTPUT);
-  pinMode(CLOCK_PIN, OUTPUT);
-
-  irDecoder.beginReceiveInput();
-
-  Timer1.initialize(1000000);
-  Timer1.attachInterrupt(bufferPrintISR);
+    // Using Timer Interrupt to print input buffer
+    Timer1.initialize(ACTION_WINDOW_US);
+    Timer1.attachInterrupt(bufferPrintISR);
 }
 
 void loop() {
@@ -77,23 +74,33 @@ void loop() {
     if(irDecoder.isInInputMode) return;
     Timer1.stop();
 
-    // Check if the button is pressed
-    //if (digitalRead(BUTTON_PIN) == LOW) {
-        // Display and process the character
-        if (!irDecoder.input_buffer.empty()) {
-            // Display characters as the user goes through the incoming characters
-            while (!irDecoder.input_buffer.empty()) {
-                // Get last element
-                irDecoder.input_buffer.get(irDecoder.input_buffer.size()-1, symbol_buffer);
-                serialDataFormat = convertToByte(symbol_buffer);
+    // Display and process the character
+    if(irDecoder.input_buffer.empty()) exit(0);
 
-                // Not actuating the solenoids, for testing
-                //displayCharacter(serialDataFormat);
-                Serial.println(serialDataFormat, HEX);
-                delay(DELAY); // Display delay 
-                irDecoder.input_buffer.pop();
-            }
-        }
-        exit(0);
-    //}
+    lcd.setCursor(0, 1);
+    lcd.print("Translating ...");
+
+    // Display characters as the user goes through the incoming characters
+    while (!irDecoder.input_buffer.empty()) {
+        // Get next element, and translate
+        irDecoder.input_buffer.get(0, symbol_buffer);
+        byte serialDataFormat = convertToByte(symbol_buffer);
+
+        // Actuating solenoids
+        solenoidsWriteCharacter(serialDataFormat);
+        irDecoder.input_buffer.pop_front();
+    }
+
+    // Turn all solenoids off
+    solenoidsWriteCharacter(B00000000);
+
+    // Finishing up and turning off display
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("Thank you!");
+    delay(1000);
+    lcd.clear();
+    lcd.noDisplay();
+
+    exit(0);
 }

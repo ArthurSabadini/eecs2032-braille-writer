@@ -28,9 +28,10 @@ public:
     String getStringfiedState(uint8_t idx);
     void add(const uint8_t element[Rows][Cols]);
     uint8_t size() const { return bufferSize; }
-    bool empty() { return size() == 0; }
+    bool empty() { return bufferSize == 0; }
     void get(uint8_t index, uint8_t element[Rows][Cols]) const;
-    void pop();
+    void pop_back();
+    void pop_front();
     void remove(int8_t index);
     
     // Overriding assignment
@@ -83,10 +84,17 @@ void BufferIO<Rows, Cols>::get(uint8_t index, uint8_t element[Rows][Cols]) const
 }
 
 template<uint8_t Rows, uint8_t Cols>
-void BufferIO<Rows, Cols>::pop() {
+void BufferIO<Rows, Cols>::pop_back() {
     if (bufferSize <= 0) return;
     remove(bufferSize - 1);
 }
+
+template<uint8_t Rows, uint8_t Cols>
+void BufferIO<Rows, Cols>::pop_front() {
+    if (bufferSize <= 0) return;
+    remove(0);
+}
+
 
 template<uint8_t Rows, uint8_t Cols>
 void BufferIO<Rows, Cols>::remove(int8_t index) {
@@ -96,7 +104,7 @@ void BufferIO<Rows, Cols>::remove(int8_t index) {
 
     if (index == bufferSize - 1) return;
     for (uint8_t idx = index; idx < size() - 1; idx++) {
-        copy(buffer[index + 1], buffer[index]);
+        copy(buffer[idx+1], buffer[idx]);
     }
 }
 
@@ -125,6 +133,7 @@ BufferIO<Rows, Cols>& BufferIO<Rows, Cols>::operator=(const BufferIO& other) {
 
 // Config Definitions
 #define ACTION_WINDON_MS 250
+#define ACTION_WINDOW_US 250000
 #define BUFFER_SIZE 11 
 #define ROWS 7
 #define COLS 3

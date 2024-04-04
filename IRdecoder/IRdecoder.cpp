@@ -46,17 +46,13 @@ String IRdecoder::getStringfiedState() {
 
 // mainly for debug pusposes
 String IRdecoder::getStringfiedSymbol() {
-    String state = "[";
+    String state = "";
 
     for(uint8_t i = 0; i < 3; i++) {
-        state += "[";
         for(uint8_t j = 0; j < 2; j++) {
             state += String(symbol[i][j]);
-            if (j < 1) state += ", ";
         }
-        state += (i == 2) ? "]" : "], ";
     } 
-    state += "]";
     return state;
 }
 
@@ -161,7 +157,7 @@ void IRdecoder::inputInterruptHandler() {
             break; 
         case IRdecoder::DELETE_WORD:
             // Delete current word
-            if(!input_buffer.empty()) input_buffer.pop(); 
+            if(!input_buffer.empty()) input_buffer.pop_back(); 
             resetState();
             break;
         case IRdecoder::CONCLUDE:
