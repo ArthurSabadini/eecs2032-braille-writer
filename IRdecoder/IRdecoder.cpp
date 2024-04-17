@@ -1,5 +1,4 @@
 #include "IRdecoder.h"
-#include "mega/pins_arduino.h" //@Delete this when adding to library
 
 IRdecoder* IRdecoder::currentInstance = nullptr;
 
