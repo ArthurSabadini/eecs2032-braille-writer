@@ -12,7 +12,6 @@ LiquidCrystal lcd(RS_PIN, EN_PIN, D4_PIN, D5_PIN, D6_PIN, D7_PIN);
 // Dynamic values used throughout the code
 uint8_t symbol_buffer[3][2] {};
 byte serialDataFormat = B0;
-int delayValue = 0;
 
 // We use this interrupt to print input to LCD display
 void bufferPrintISR() {

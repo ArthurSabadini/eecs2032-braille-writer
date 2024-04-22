@@ -18,7 +18,6 @@
 #define D6_PIN 49
 #define D7_PIN 53
 
-
 // InfraRed Module Connection
 #define IR_PIN 2
 #define DELAY 500
@@ -42,17 +41,17 @@ byte convertToByte(uint8_t data[3][2]) {
 
 // Function to display a character on the display
 void solenoidsWriteCharacter(byte serialDataFormat) {
-  // Send the solenoid pattern via shift register
-  digitalWrite(LATCH_PIN, LOW);
-  shiftOut(DS_PIN, CLOCK_PIN, LSBFIRST, serialDataFormat); // Only sending the first byte
-  digitalWrite(LATCH_PIN, HIGH);
-  delay(DELAY);
+    // Send the solenoid pattern via shift register
+    digitalWrite(LATCH_PIN, LOW);
+    shiftOut(DS_PIN, CLOCK_PIN, LSBFIRST, serialDataFormat); // Only sending the first byte
+    digitalWrite(LATCH_PIN, HIGH);
+    delay(DELAY);
 
-  // Write all solenoids low for safety, and characters transition
-  digitalWrite(LATCH_PIN, LOW);
-  shiftOut(DS_PIN, CLOCK_PIN, LSBFIRST, B00000000); // Only sending the first byte
-  digitalWrite(LATCH_PIN, HIGH);
-  delay(SPACING_DELAY);
+    // Write all solenoids low for safety, and characters transition
+    digitalWrite(LATCH_PIN, LOW);
+    shiftOut(DS_PIN, CLOCK_PIN, LSBFIRST, B00000000); // Only sending the first byte
+    digitalWrite(LATCH_PIN, HIGH);
+    delay(SPACING_DELAY);
 }
 
 #endif
