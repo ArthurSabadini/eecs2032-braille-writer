@@ -6,12 +6,16 @@ NOTE: Create an IRdecoder file in Arduino/libraries and add IRdecoder.h and IRde
 This branch attempts to improve the input system by using interrupts
 
 The sketch that should be uploaded to an Arduino to mimic the final functionality is the translation.ino file.
-It is needed to have all files in the translation folder in the same directory.
+All files in the translation folder must be in the same directory.
 
-The demo video can be seen in this think https://www.youtube.com/watch?v=A-jqoaMqUTU.
+The demo video can be seen at this link https://www.youtube.com/watch?v=A-jqoaMqUTU.
 
 # Video Demo
 [![Watch the video](Reports/Images/circuit_driver.PNG)](https://www.youtube.com/watch?v=A-jqoaMqUTU)
+
+# Documentation
+- A report containing the hardware design, functionality, simulations and overall calculations can be found here [Calculations Report](Reports/calculations_report.pdf) (for course EECS2210).
+- A report containing the software design, implementation and code explanation can be found here [System Report](Reports/system_report.pdf) (for course EECS2032).
 
 ## 🛠️ Technologies & Tools
 ![C++](https://img.shields.io/badge/C++-00599C?style=plastic&logo=c%2B%2B&logoColor=white)  
