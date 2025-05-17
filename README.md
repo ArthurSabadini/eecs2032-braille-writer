@@ -11,7 +11,7 @@ It is needed to have all files in the translation folder in the same directory.
 The demo video can be seen in this think https://www.youtube.com/watch?v=A-jqoaMqUTU.
 
 # Video Demo
-[![Watch the video](Images/circuit_driver.png)](https://www.youtube.com/watch?v=A-jqoaMqUTU)
+[![Watch the video](Reports/Images/circuit_driver.png)](https://www.youtube.com/watch?v=A-jqoaMqUTU)
 
 ## 🛠️ Technologies & Tools
 ![C++](https://img.shields.io/badge/C++-00599C?style=plastic&logo=c%2B%2B&logoColor=white)  
