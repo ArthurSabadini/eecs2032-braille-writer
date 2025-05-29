@@ -10,6 +10,10 @@ All files in the translation folder must be in the same directory.
 
 The demo video can be seen at this link https://www.youtube.com/watch?v=A-jqoaMqUTU.
 
+# Circuit Schematic
+[![See Full Schematic](Reports/Images/braille-writter-schematic.PNG)](Reports/braille-writter-schematic.pdf)
+
+
 # Video Demo
 [![Watch the video](Reports/Images/circuit_driver.PNG)](https://www.youtube.com/watch?v=A-jqoaMqUTU)
 
