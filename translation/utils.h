@@ -7,8 +7,8 @@
 
 // Shift Register Connections
 #define DS_PIN 4
-#define LATCH_PIN 6
-#define CLOCK_PIN 8
+#define CLOCK_PIN 6
+#define LATCH_PIN 8
 
 // LCD Connections
 #define RS_PIN 33
