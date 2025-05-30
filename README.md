@@ -11,8 +11,8 @@ All files in the translation folder must be in the same directory.
 The demo video can be seen at this link https://www.youtube.com/watch?v=A-jqoaMqUTU.
 
 # Circuit Schematic
+- Check the [NOTICE.md](./NOTICE.md) for references to external schematic symbols used, under public licenses.
 [![See Full Schematic](Reports/Images/braille-writter-schematic.PNG)](Reports/braille-writter-schematic.pdf)
-
 
 # Video Demo
 [![Watch the video](Reports/Images/circuit_driver.PNG)](https://www.youtube.com/watch?v=A-jqoaMqUTU)
@@ -41,6 +41,14 @@ The demo video can be seen at this link https://www.youtube.com/watch?v=A-jqoaMq
 - 🔌 **Microcontroller:** [Arduino Mega 2560](https://store.arduino.cc/products/arduino-mega-2560-rev3) (ATmega2560)  
 - ⚙️ **Circuit Driver:** Custom actuator control circuit  
 - 🧩 **Interface:** Digital I/O for control signaling and feedback  
+
+## Credits
+
+Special thanks to:
+
+- **Alarm Siren** for the [arduino-kicad-library](https://github.com/Alarm-Siren/arduino-kicad-library) project, where the Arduino_Mega2560_R3_Shield kicad symbol (ArduinoMega) was used in the schematic.
+
+- **Andres Garcia Alves** for the [electronics-kicad-custom-simbols](https://github.com/andres-garcia-alves/electronics-kicad-custom-simbols) project, where the VS1838B kicad symbol (InfraRed sensor) was used in the schematic. 
 
 ## License
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
